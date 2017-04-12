@@ -25,14 +25,17 @@ class DynamicArray
   # O(1)
   def pop
     @length -= 1
-    val = @store[@length - 1]
-    @store[@length - 1] = nil
+    val = @store[@length]
+    @store[@length] = nil
     val
   end
 
   # O(1) ammortized; O(n) worst case. Variable because of the possible
   # resize.
   def push(val)
+    @length += 1
+    resize! if @length > @capacity
+    @store[@length - 1] = val
   end
 
   # O(n): has to shift over all the elements.
