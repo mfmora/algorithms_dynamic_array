@@ -13,8 +13,8 @@ class RingBuffer
 
   # O(1)
   def [](index)
+    check_index(index)
     idx = (@start_idx + index) % @capacity
-    check_index(idx)
     @store[idx]
   end
 
@@ -27,8 +27,8 @@ class RingBuffer
 
   # O(1)
   def pop
-    check_index(@length - 1)
-    index = (@start_idx - 1) % @length
+    check_index((@start_idx - 1 + length) % @capacity)
+    index = (@start_idx - 1 + length) % @capacity
     @length -= 1
     val = @store[index]
     @store[index] = nil
@@ -39,20 +39,27 @@ class RingBuffer
   def push(val)
     @length += 1
     resize! if @length > @capacity
-    index = (@start_idx - 1) % @length
+    index = (@start_idx - 1 + length) % @capacity
     @store[index] = val
   end
 
   # O(1)
   def shift
+    check_index(@length - 1)
     val = @store[@start_idx]
+    @store[@start_idx] = nil
     @start_idx += 1
+    @length -= 1
     val
   end
 
   # O(1) ammortized
   def unshift(val)
-    
+    @length += 1
+    resize! if @length > @capacity
+    index = (@start_idx - 1) % @capacity
+    @start_idx = index
+    @store[index] = val
   end
 
   protected
@@ -60,19 +67,19 @@ class RingBuffer
   attr_writer :length
 
   def check_index(index)
-    raise("index out of bounds") if index >= @length || index < 0
+    raise("index out of bounds") if index >= @length || @length <= 0
   end
 
   def resize!
     @old_capacity = @capacity
     @capacity *= 2
     new_array = StaticArray.new(@capacity)
-    i = 0
-    while i < @old_capacity
-      new_array[i] = @store[i]
-      i += 1
+    i = @start_idx
+    @old_capacity.times do |index|
+      new_array[index] = @store[i]
+      i = (i + 1) % @old_capacity
     end
-
+    @start_idx = 0
     @store = new_array
   end
 end
