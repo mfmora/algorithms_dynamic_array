@@ -24,7 +24,10 @@ class DynamicArray
 
   # O(1)
   def pop
-    
+    @length -= 1
+    val = @store[@length - 1]
+    @store[@length - 1] = nil
+    val
   end
 
   # O(1) ammortized; O(n) worst case. Variable because of the possible
