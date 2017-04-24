@@ -1,3 +1,4 @@
+require "byebug"
 require "ring_buffer"
 
 describe RingBuffer do
@@ -15,7 +16,6 @@ describe RingBuffer do
 
     expect(arr.length).to eq(5)
     5.times { |i| expect(arr[i]) == i }
-
     4.downto(0) do |i|
       expect(arr.pop).to eq(i)
     end
@@ -37,7 +37,7 @@ describe RingBuffer do
 
   it "correctly handles a mix of pushes/pops and shifts/unshifts" do
     arr = RingBuffer.new
-
+    # debugger
     4.times do |i|
       arr.push(i)
       arr.unshift(i)
@@ -65,18 +65,17 @@ describe RingBuffer do
 
   it "correctly handles pushes/pops/shifts/unshifts after resizing" do
     arr = RingBuffer.new
-
     5.times do |i|
       arr.push(i)
       arr.unshift(i)
     end
-
     5.times do |i|
       expect(arr[i]).to eq(4-i)
       expect(arr[i+5]).to eq(i)
     end
 
     4.downto(0) do |i|
+      # debugger
       expect(arr.shift).to eq(i)
       expect(arr.pop).to eq(i)
     end
